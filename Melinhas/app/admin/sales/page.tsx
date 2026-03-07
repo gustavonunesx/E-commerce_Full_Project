@@ -47,6 +47,43 @@ export default function AdminSalesPage() {
     return Array.from(map.values())
   }, [sales])
 
+  const revenueByCategory = useMemo(() => {
+    const cutoff = new Date()
+    cutoff.setDate(cutoff.getDate() - 30)
+
+    const map = new Map<string, number>()
+
+    sales.forEach((sale) => {
+      const date = new Date(sale.date)
+      if (date < cutoff) return
+      sale.items.forEach((item) => {
+        map.set(item.category, (map.get(item.category) ?? 0) + item.price * item.quantity)
+      })
+    })
+
+    return Array.from(map.entries()).map(([category, revenue]) => ({ category, revenue }))
+  }, [sales])
+
+  const revenueByProduct = useMemo(() => {
+    const cutoff = new Date()
+    cutoff.setDate(cutoff.getDate() - 30)
+
+    const map = new Map<string, number>()
+
+    sales.forEach((sale) => {
+      const date = new Date(sale.date)
+      if (date < cutoff) return
+      sale.items.forEach((item) => {
+        map.set(item.name, (map.get(item.name) ?? 0) + item.price * item.quantity)
+      })
+    })
+
+    return Array.from(map.entries())
+      .map(([product, revenue]) => ({ product, revenue }))
+      .sort((a, b) => b.revenue - a.revenue)
+      .slice(0, 10)
+  }, [sales])
+
   return (
     <>
       <h1 className="text-2xl font-bold mb-4">Vendas & Receita</h1>
@@ -91,6 +128,36 @@ export default function AdminSalesPage() {
             ))}
           </tbody>
         </table>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-6">
+        <div className="rounded-lg border p-4">
+          <h2 className="text-lg font-semibold mb-3">Receita por categoria (últimos 30 dias)</h2>
+          <div className="h-56">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={revenueByCategory} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
+                <XAxis dataKey="category" tick={{ fontSize: 11 }} />
+                <YAxis tick={{ fontSize: 11 }} />
+                <Tooltip formatter={(value: number) => `R$ ${value.toFixed(2)}`} />
+                <Bar dataKey="revenue" fill="#059669" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        <div className="rounded-lg border p-4">
+          <h2 className="text-lg font-semibold mb-3">Receita por produto (últimos 30 dias)</h2>
+          <div className="h-56">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={revenueByProduct} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
+                <XAxis dataKey="product" tick={{ fontSize: 11 }} />
+                <YAxis tick={{ fontSize: 11 }} />
+                <Tooltip formatter={(value: number) => `R$ ${value.toFixed(2)}`} />
+                <Bar dataKey="revenue" fill="#7C3AED" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
       </div>
     </>
   )

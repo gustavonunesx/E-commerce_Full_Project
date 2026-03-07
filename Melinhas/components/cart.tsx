@@ -1,6 +1,7 @@
 "use client"
 
 import { useCart } from "@/contexts/cart-context"
+import { useProducts } from "@/contexts/products-context"
 import { useSales } from "@/contexts/sales-context"
 import { X, Plus, Minus, ShoppingBag, Trash2, MessageCircle } from "lucide-react"
 import Image from "next/image"
@@ -18,6 +19,7 @@ export function Cart() {
     clearCart 
   } = useCart()
   const { addSale } = useSales()
+  const { updateProduct, getProductById } = useProducts()
 
   const formatPrice = (price: number) => {
     return price.toLocaleString("pt-BR", {
@@ -40,6 +42,14 @@ export function Cart() {
     addSale({
       items,
       total: totalPrice,
+    })
+
+    // Decrement stock for each item sold
+    items.forEach((item) => {
+      const product = getProductById(item.id)
+      if (!product) return
+      const newStock = Math.max(0, product.stock - item.quantity)
+      updateProduct({ ...product, stock: newStock })
     })
 
     window.open(`https://wa.me/5516981094196?text=${message}`, "_blank")

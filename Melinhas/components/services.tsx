@@ -10,10 +10,18 @@ import { useProducts } from "@/contexts/products-context"
 import type { Product } from "@/lib/products"
 
 function ProductCard({ product }: { product: Product }) {
-  const { addItem } = useCart()
+  const { addItem, items } = useCart()
   const [added, setAdded] = useState(false)
 
+  const inCartQuantity = items.find((i) => i.id === product.id)?.quantity ?? 0
+  const isOutOfStock = product.stock <= 0 || inCartQuantity >= product.stock
+
   const handleAddToCart = () => {
+    if (isOutOfStock) {
+      alert("Produto sem estoque disponível")
+      return
+    }
+
     addItem({
       id: product.id,
       name: product.name,
@@ -46,11 +54,13 @@ function ProductCard({ product }: { product: Product }) {
         {/* Add to Cart Button */}
         <button
           onClick={handleAddToCart}
-          disabled={added}
+          disabled={added || isOutOfStock}
           className={cn(
             "absolute bottom-4 right-4 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg",
-            added 
-              ? "bg-green-500 text-white scale-110" 
+            added
+              ? "bg-green-500 text-white scale-110"
+              : isOutOfStock
+              ? "bg-gray-200 text-gray-500 cursor-not-allowed"
               : "bg-primary text-primary-foreground hover:scale-110 hover:shadow-xl"
           )}
           aria-label="Adicionar à sacola"
@@ -69,6 +79,12 @@ function ProductCard({ product }: { product: Product }) {
           </span>
         </div>
         <p className="text-sm text-muted-foreground line-clamp-2">{product.description}</p>
+        <div className="mt-2 flex flex-wrap gap-2 text-xs text-muted-foreground">
+          <span className="bg-muted px-2 py-1 rounded">Estoque: {Math.max(0, product.stock - inCartQuantity)}</span>
+          {isOutOfStock && (
+            <span className="bg-destructive/10 text-destructive px-2 py-1 rounded">Esgotado</span>
+          )}
+        </div>
         <span className="inline-block mt-3 text-xs text-muted-foreground/70 bg-muted px-2 py-1 rounded">
           {product.category}
         </span>
