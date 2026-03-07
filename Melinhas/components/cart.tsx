@@ -1,6 +1,7 @@
 "use client"
 
 import { useCart } from "@/contexts/cart-context"
+import { useSales } from "@/contexts/sales-context"
 import { X, Plus, Minus, ShoppingBag, Trash2, MessageCircle } from "lucide-react"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
@@ -16,6 +17,7 @@ export function Cart() {
     removeItem,
     clearCart 
   } = useCart()
+  const { addSale } = useSales()
 
   const formatPrice = (price: number) => {
     return price.toLocaleString("pt-BR", {
@@ -34,6 +36,12 @@ export function Cart() {
 
   const handleWhatsAppOrder = () => {
     const message = generateWhatsAppMessage()
+
+    addSale({
+      items,
+      total: totalPrice,
+    })
+
     window.open(`https://wa.me/5516981094196?text=${message}`, "_blank")
     clearCart()
     setIsCartOpen(false)

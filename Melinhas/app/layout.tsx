@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import { Playfair_Display, Inter } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { CartProvider } from '@/contexts/cart-context'
+import { ProductsProvider } from '@/contexts/products-context'
+import { SalesProvider } from '@/contexts/sales-context'
 import { Cart } from '@/components/cart'
 import './globals.css'
 
@@ -40,20 +42,21 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="pt-BR" className={`${playfair.variable} ${inter.variable}`}>
       <body className="font-sans antialiased">
-        <CartProvider>
-          {children}
-          <Cart />
-        </CartProvider>
+        <SalesProvider>
+          <ProductsProvider>
+            <CartProvider>
+              {children}
+              <Cart />
+            </CartProvider>
+          </ProductsProvider>
+        </SalesProvider>
         <Analytics />
       </body>
     </html>
   )
+
 }
