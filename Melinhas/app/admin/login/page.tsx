@@ -1,69 +1,90 @@
-// app/admin/login/page.tsx
 "use client"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { createClient } from "@/lib/supabase/client"
 
-const ADMIN_USERNAME = "michel"
-const ADMIN_PASSWORD = "pilla"
-
-export default function AdminLoginPage() {
+export default function LoginPage() {
+  const [email, setEmail] = useState("")
+  const [senha, setSenha] = useState("")
+  const [erro, setErro] = useState("")
+  const [carregando, setCarregando] = useState(false)
   const router = useRouter()
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
-  const [error, setError] = useState<string | null>(null)
+  const supabase = createClient()
 
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault()
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setCarregando(true)
+    setErro("")
 
-    if (username !== ADMIN_USERNAME || password !== ADMIN_PASSWORD) {
-      setError("Usuário ou senha incorretos")
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password: senha,
+    })
+
+    if (error) {
+      setErro("Email ou senha incorretos")
+      setCarregando(false)
       return
     }
 
-    localStorage.setItem("melinhas-admin", "true")
-    router.replace("/admin")
+    router.push("/admin/dashboard")
+    router.refresh()
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-muted py-10">
-      <div className="w-full max-w-md rounded-xl border bg-white p-8 shadow">
-        <h1 className="text-2xl font-bold mb-4">Login Admin</h1>
-        <p className="text-sm text-muted-foreground mb-6">
-          Acesse o painel administrativo. Usuário: <strong>admin</strong> / Senha: <strong>1234</strong>
-        </p>
+    <div className="min-h-screen flex items-center justify-center bg-muted">
+      <div className="bg-background p-8 rounded-2xl shadow-lg w-full max-w-md">
+        <div className="text-center mb-8">
+          <h1 className="font-serif text-3xl font-bold text-foreground">
+            Melinhas
+          </h1>
+          <p className="text-muted-foreground mt-2">
+            Acesso restrito — administração
+          </p>
+        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <label className="block">
-            <span className="text-sm font-medium">Usuário</span>
+        <form onSubmit={handleLogin} className="space-y-4">
+          <div>
+            <label className="text-sm font-medium text-foreground block mb-2">
+              Email
+            </label>
             <input
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="mt-1 w-full rounded border px-3 py-2"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              placeholder="seu@email.com"
               required
             />
-          </label>
+          </div>
 
-          <label className="block">
-            <span className="text-sm font-medium">Senha</span>
+          <div>
+            <label className="text-sm font-medium text-foreground block mb-2">
+              Senha
+            </label>
             <input
               type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 w-full rounded border px-3 py-2"
+              value={senha}
+              onChange={(e) => setSenha(e.target.value)}
+              className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              placeholder="••••••••"
               required
             />
-          </label>
+          </div>
 
-          {error && (
-            <p className="text-sm text-destructive">{error}</p>
+          {erro && (
+            <p className="text-sm text-destructive bg-destructive/10 px-4 py-3 rounded-xl">
+              {erro}
+            </p>
           )}
 
           <button
             type="submit"
-            className="w-full rounded bg-slate-900 px-4 py-2 text-white hover:bg-slate-700 transition"
+            disabled={carregando}
+            className="w-full py-3 bg-primary text-primary-foreground rounded-xl font-medium transition-all hover:bg-primary/90 disabled:opacity-50"
           >
-            Entrar
+            {carregando ? "Entrando..." : "Entrar"}
           </button>
         </form>
       </div>
