@@ -3,7 +3,6 @@ import { Playfair_Display, Inter } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import { CartProvider } from '@/contexts/cart-context'
 import { ProductsProvider } from '@/contexts/products-context'
-import { SalesProvider } from '@/contexts/sales-context'
 import { Cart } from '@/components/cart'
 import './globals.css'
 
@@ -46,14 +45,12 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="pt-BR" className={`${playfair.variable} ${inter.variable}`}>
       <body className="font-sans antialiased">
-        <SalesProvider>
           <ProductsProvider>
             <CartProvider>
               {children}
               <Cart />
             </CartProvider>
           </ProductsProvider>
-        </SalesProvider>
         <Analytics />
       </body>
     </html>

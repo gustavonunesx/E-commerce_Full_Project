@@ -44,7 +44,7 @@ export function Header() {
         >
           {/* Substitua este div pela sua logo personalizada */}
           <Image
-            src="./images/logo.png"
+            src="/images/logo.png"
             alt="Logo Melinhas"
             width={48}
             height={48}

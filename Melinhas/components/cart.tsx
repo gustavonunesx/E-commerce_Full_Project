@@ -2,23 +2,22 @@
 
 import { useCart } from "@/contexts/cart-context"
 import { useProducts } from "@/contexts/products-context"
-import { useSales } from "@/contexts/sales-context"
 import { X, Plus, Minus, ShoppingBag, Trash2, MessageCircle } from "lucide-react"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
+import { createClient } from "@/lib/supabase/client"
 
 export function Cart() {
-  const { 
-    items, 
-    totalItems, 
-    totalPrice, 
-    isCartOpen, 
-    setIsCartOpen, 
-    updateQuantity, 
+  const {
+    items,
+    totalItems,
+    totalPrice,
+    isCartOpen,
+    setIsCartOpen,
+    updateQuantity,
     removeItem,
-    clearCart 
+    clearCart,
   } = useCart()
-  const { addSale } = useSales()
   const { updateProduct, getProductById } = useProducts()
 
   const formatPrice = (price: number) => {
@@ -33,24 +32,77 @@ export function Cart() {
     items.forEach((item) => {
       message += `${item.quantity}x ${item.name} - ${formatPrice(item.price * item.quantity)}\n`
     })
+    message += `\nTotal: ${formatPrice(totalPrice)}`
     return encodeURIComponent(message)
   }
 
-  const handleWhatsAppOrder = () => {
+  const salvarPedidoNoSupabase = async () => {
+    const supabase = createClient()
+
+    // 1. Cria o pedido principal
+    const { data: pedido, error: erroPedido } = await supabase
+      .from("pedidos")
+      .insert({
+        origem: "site",
+        status: "pendente",
+        total: totalPrice,
+      })
+      .select()
+      .single()
+
+    if (erroPedido || !pedido) {
+      console.error("Erro ao salvar pedido:", erroPedido)
+      return
+    }
+
+    // 2. Salva cada item do pedido
+    const itensPedido = items.map((item) => ({
+      pedido_id: pedido.id,
+      produto_id: Number(item.id),
+      quantidade: item.quantity,
+      preco_unitario: item.price,
+      subtotal: item.price * item.quantity,
+    }))
+
+    const { error: erroItens } = await supabase
+      .from("itens_pedido")
+      .insert(itensPedido)
+
+    if (erroItens) {
+      console.error("Erro ao salvar itens do pedido:", erroItens)
+    }
+
+    // 3. Desconta estoque de cada produto
+    for (const item of items) {
+      const product = getProductById(Number(item.id))
+      if (!product) continue
+
+      const novoEstoque = Math.max(0, product.estoque - item.quantity)
+
+      await supabase
+        .from("produtos")
+        .update({ estoque: novoEstoque })
+        .eq("id", product.id)
+
+      // Atualiza o estado local também para refletir na tela
+      updateProduct({ ...product, estoque: novoEstoque })
+    }
+
+    // 4. Registra a receita na tabela financeira
+    await supabase.from("transacoes_financeiras").insert({
+      tipo: "receita",
+      categoria: "venda_site",
+      descricao: `Pedido #${pedido.id} via WhatsApp`,
+      valor: totalPrice,
+      pedido_id: pedido.id,
+    })
+  }
+
+  const handleWhatsAppOrder = async () => {
     const message = generateWhatsAppMessage()
 
-    addSale({
-      items,
-      total: totalPrice,
-    })
-
-    // Decrement stock for each item sold
-    items.forEach((item) => {
-      const product = getProductById(item.id)
-      if (!product) return
-      const newStock = Math.max(0, product.stock - item.quantity)
-      updateProduct({ ...product, stock: newStock })
-    })
+    // Salva tudo no Supabase antes de abrir o WhatsApp
+    await salvarPedidoNoSupabase()
 
     window.open(`https://wa.me/5516981094196?text=${message}`, "_blank")
     clearCart()
@@ -106,10 +158,7 @@ export function Cart() {
           ) : (
             <div className="space-y-4">
               {items.map((item) => (
-                <div
-                  key={item.id}
-                  className="flex gap-4 bg-muted p-4 rounded-xl"
-                >
+                <div key={item.id} className="flex gap-4 bg-muted p-4 rounded-xl">
                   <div className="relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
                     <Image
                       src={item.image}
@@ -141,7 +190,9 @@ export function Cart() {
                         >
                           <Minus className="w-4 h-4" />
                         </button>
-                        <span className="w-8 text-center font-medium">{item.quantity}</span>
+                        <span className="w-8 text-center font-medium">
+                          {item.quantity}
+                        </span>
                         <button
                           onClick={() => updateQuantity(item.id, item.quantity + 1)}
                           className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-muted transition-colors"
@@ -166,7 +217,9 @@ export function Cart() {
           <div className="p-6 border-t border-border bg-muted/50">
             <div className="flex items-center justify-between mb-4">
               <span className="text-muted-foreground">Total</span>
-              <span className="font-serif text-2xl text-foreground">{formatPrice(totalPrice)}</span>
+              <span className="font-serif text-2xl text-foreground">
+                {formatPrice(totalPrice)}
+              </span>
             </div>
             <button
               onClick={handleWhatsAppOrder}

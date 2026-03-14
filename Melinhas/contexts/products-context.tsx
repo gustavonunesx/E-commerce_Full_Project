@@ -1,15 +1,23 @@
 "use client"
 
-import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react"
+import { createClient } from "@/lib/supabase/client"
 import type { Product } from "@/lib/products"
-import { defaultProducts } from "@/lib/products"
 
 type ProductsContextType = {
   products: Product[]
-  addProduct: (product: Product) => void
-  updateProduct: (product: Product) => void
-  removeProduct: (id: string) => void
-  getProductById: (id: string) => Product | undefined
+  loading: boolean
+  addProduct: (product: Omit<Product, "id" | "criado_em">) => Promise<void>
+  updateProduct: (product: Product) => Promise<void>
+  removeProduct: (id: number) => Promise<void>
+  getProductById: (id: number) => Product | undefined
   categories: string[]
 }
 
@@ -17,47 +25,88 @@ const ProductsContext = createContext<ProductsContextType | undefined>(undefined
 
 export function ProductsProvider({ children }: { children: ReactNode }) {
   const [products, setProducts] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
+  const supabase = createClient()
 
+  // Busca produtos do banco ao carregar
   useEffect(() => {
-    const stored = localStorage.getItem("melinhas-products")
-    if (stored) {
-      try {
-        setProducts(JSON.parse(stored))
-        return
-      } catch {
-        // ignore parse errors
-      }
-    }
+    async function fetchProducts() {
+  const { data, error } = await supabase
+    .from("produtos")
+    .select("*")
+    .eq("ativo", true)
+    .order("categoria")
 
-    setProducts(defaultProducts)
+  console.log("Produtos retornados:", data)
+  console.log("Erro:", error)
+
+  if (!error && data) {
+    setProducts(data)
+  }
+  setLoading(false)
+}
+
+
+    fetchProducts()
   }, [])
 
-  useEffect(() => {
-    localStorage.setItem("melinhas-products", JSON.stringify(products))
-  }, [products])
+  const addProduct = async (product: Omit<Product, "id" | "criado_em">) => {
+    const { data, error } = await supabase
+      .from("produtos")
+      .insert(product)
+      .select()
+      .single()
 
-  const addProduct = (product: Product) => {
-    setProducts((prev) => [...prev, product])
+    if (!error && data) {
+      setProducts((prev) => [...prev, data])
+    }
   }
 
-  const updateProduct = (product: Product) => {
-    setProducts((prev) => prev.map((p) => (p.id === product.id ? product : p)))
+  const updateProduct = async (product: Product) => {
+    const { error } = await supabase
+      .from("produtos")
+      .update(product)
+      .eq("id", product.id)
+
+    if (!error) {
+      setProducts((prev) =>
+        prev.map((p) => (p.id === product.id ? product : p))
+      )
+    }
   }
 
-  const removeProduct = (id: string) => {
-    setProducts((prev) => prev.filter((p) => p.id !== id))
+  const removeProduct = async (id: number) => {
+    // Não deleta do banco — só marca como inativo
+    const { error } = await supabase
+      .from("produtos")
+      .update({ ativo: false })
+      .eq("id", id)
+
+    if (!error) {
+      setProducts((prev) => prev.filter((p) => p.id !== id))
+    }
   }
 
-  const getProductById = (id: string) => products.find((p) => p.id === id)
+  const getProductById = (id: number) => products.find((p) => p.id === id)
 
   const categories = useMemo(() => {
     const unique = new Set<string>()
-    products.forEach((p) => unique.add(p.category))
+    products.forEach((p) => unique.add(p.categoria))
     return ["Todos", ...Array.from(unique)]
   }, [products])
 
   return (
-    <ProductsContext.Provider value={{ products, addProduct, updateProduct, removeProduct, getProductById, categories }}>
+    <ProductsContext.Provider
+      value={{
+        products,
+        loading,
+        addProduct,
+        updateProduct,
+        removeProduct,
+        getProductById,
+        categories,
+      }}
+    >
       {children}
     </ProductsContext.Provider>
   )
