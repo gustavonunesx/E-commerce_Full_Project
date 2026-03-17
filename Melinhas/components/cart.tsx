@@ -5,7 +5,6 @@ import { useProducts } from "@/contexts/products-context"
 import { X, Plus, Minus, ShoppingBag, Trash2, MessageCircle } from "lucide-react"
 import Image from "next/image"
 import { cn } from "@/lib/utils"
-import { createClient } from "@/lib/supabase/client"
 
 export function Cart() {
   const {
@@ -37,73 +36,20 @@ export function Cart() {
   }
 
   const salvarPedidoNoSupabase = async () => {
-    const supabase = createClient()
-
-    // 1. Cria o pedido principal
-    const { data: pedido, error: erroPedido } = await supabase
-      .from("pedidos")
-      .insert({
-        origem: "site",
-        status: "pendente",
-        total: totalPrice,
-      })
-      .select()
-      .single()
-
-    if (erroPedido || !pedido) {
-      console.error("Erro ao salvar pedido:", erroPedido)
-      return
-    }
-
-    // 2. Salva cada item do pedido
-    const itensPedido = items.map((item) => ({
-      pedido_id: pedido.id,
-      produto_id: Number(item.id),
-      quantidade: item.quantity,
-      preco_unitario: item.price,
-      subtotal: item.price * item.quantity,
-    }))
-
-    const { error: erroItens } = await supabase
-      .from("itens_pedido")
-      .insert(itensPedido)
-
-    if (erroItens) {
-      console.error("Erro ao salvar itens do pedido:", erroItens)
-    }
-
-    // 3. Desconta estoque de cada produto
-    for (const item of items) {
-      const product = getProductById(Number(item.id))
-      if (!product) continue
-
-      const novoEstoque = Math.max(0, product.estoque - item.quantity)
-
-      await supabase
-        .from("produtos")
-        .update({ estoque: novoEstoque })
-        .eq("id", product.id)
-
-      // Atualiza o estado local também para refletir na tela
-      updateProduct({ ...product, estoque: novoEstoque })
-    }
-
-    // 4. Registra a receita na tabela financeira
-    await supabase.from("transacoes_financeiras").insert({
-      tipo: "receita",
-      categoria: "venda_site",
-      descricao: `Pedido #${pedido.id} via WhatsApp`,
-      valor: totalPrice,
-      pedido_id: pedido.id,
+    const response = await fetch("/api/pedidos", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ items, total: totalPrice }),
     })
+
+    if (!response.ok) {
+      console.error("Erro ao salvar pedido")
+    }
   }
 
   const handleWhatsAppOrder = async () => {
     const message = generateWhatsAppMessage()
-
-    // Salva tudo no Supabase antes de abrir o WhatsApp
     await salvarPedidoNoSupabase()
-
     window.open(`https://wa.me/5516981094196?text=${message}`, "_blank")
     clearCart()
     setIsCartOpen(false)
@@ -164,6 +110,7 @@ export function Cart() {
                       src={item.image}
                       alt={item.name}
                       fill
+                      sizes="(max-width: 640px) 100vw, 50vw"
                       className="object-cover"
                     />
                   </div>

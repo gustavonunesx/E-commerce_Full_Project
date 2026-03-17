@@ -15,7 +15,6 @@ type ProductsContextType = {
   products: Product[]
   loading: boolean
   addProduct: (product: Omit<Product, "id" | "criado_em">) => Promise<void>
-  updateProduct: (product: Product) => Promise<void>
   removeProduct: (id: number) => Promise<void>
   getProductById: (id: number) => Product | undefined
   categories: string[]
@@ -37,9 +36,6 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
     .eq("ativo", true)
     .order("categoria")
 
-  console.log("Produtos retornados:", data)
-  console.log("Erro:", error)
-
   if (!error && data) {
     setProducts(data)
   }
@@ -59,19 +55,6 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
 
     if (!error && data) {
       setProducts((prev) => [...prev, data])
-    }
-  }
-
-  const updateProduct = async (product: Product) => {
-    const { error } = await supabase
-      .from("produtos")
-      .update(product)
-      .eq("id", product.id)
-
-    if (!error) {
-      setProducts((prev) =>
-        prev.map((p) => (p.id === product.id ? product : p))
-      )
     }
   }
 
@@ -101,7 +84,6 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
         products,
         loading,
         addProduct,
-        updateProduct,
         removeProduct,
         getProductById,
         categories,
