@@ -1,5 +1,11 @@
 # things to do
 
+
+## FINALIZACAO DE PEDIDO
+
+- ver metodo de confirmacao de pedido apos pagamento
+
+
 ## aba pedidos dashboard
 
 - hook de verificar pagamento e marcar confirmado automaticamente sem ser manual

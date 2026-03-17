@@ -1,6 +1,8 @@
 import { createClient } from "@/lib/supabase/server"
 import { ShoppingBag } from "lucide-react"
 import PedidoCard from "./pedido-card"
+import FiltrosPedidos from "./filtros-pedidos"
+import NotificacaoPedidos from "../pedidos/notificacao-pedidos"
 
 function formatPrice(price: number) {
   return price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
@@ -13,7 +15,6 @@ export default async function PedidosPage({
 }) {
   const supabase = await createClient()
 
-  // Monta a query com filtros
   let query = supabase
     .from("pedidos")
     .select(`
@@ -53,7 +54,6 @@ export default async function PedidosPage({
 
   const { data: pedidos } = await query
 
-  // Contadores por status para os badges
   const { data: contadores } = await supabase
     .from("pedidos")
     .select("status")
@@ -76,14 +76,17 @@ export default async function PedidosPage({
         </p>
       </div>
 
+      {/* Notificação realtime — aparece quando chega pedido novo */}
+      <NotificacaoPedidos />
+
       {/* Badges de status */}
       <div className="flex flex-wrap gap-2">
         {[
-          { key: "pendente", label: "Pendentes", cor: "bg-amber-100 text-amber-800 border-amber-200" },
+          { key: "pendente",   label: "Pendentes",   cor: "bg-amber-100 text-amber-800 border-amber-200" },
           { key: "confirmado", label: "Confirmados", cor: "bg-blue-100 text-blue-800 border-blue-200" },
-          { key: "pronto", label: "Prontos", cor: "bg-purple-100 text-purple-800 border-purple-200" },
-          { key: "entregue", label: "Entregues", cor: "bg-green-100 text-green-800 border-green-200" },
-          { key: "cancelado", label: "Cancelados", cor: "bg-red-100 text-red-800 border-red-200" },
+          { key: "pronto",     label: "Prontos",     cor: "bg-purple-100 text-purple-800 border-purple-200" },
+          { key: "entregue",   label: "Entregues",   cor: "bg-green-100 text-green-800 border-green-200" },
+          { key: "cancelado",  label: "Cancelados",  cor: "bg-red-100 text-red-800 border-red-200" },
         ].map((s) => (
           <div
             key={s.key}
@@ -102,7 +105,7 @@ export default async function PedidosPage({
         periodoAtual={searchParams.periodo ?? "todos"}
       />
 
-      {/* Resumo do filtro */}
+      {/* Resumo */}
       <div className="flex items-center justify-between">
         <p className="text-sm text-muted-foreground">
           {totalFiltrado} pedido{totalFiltrado !== 1 ? "s" : ""} encontrado{totalFiltrado !== 1 ? "s" : ""}
@@ -131,6 +134,3 @@ export default async function PedidosPage({
     </div>
   )
 }
-
-// Componente de filtros (client)
-import FiltrosPedidos from "./filtros-pedidos"
