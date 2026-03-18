@@ -1,0 +1,25 @@
+{
+  "pages": {
+    "/_app": []
+  },
+  "devFiles": [],
+  "polyfillFiles": [
+    "static/chunks/a1f8a_next_dist_build_polyfills_polyfill-nomodule.js"
+  ],
+  "lowPriorityFiles": [
+    "static/development/_ssgManifest.js",
+    "static/development/_buildManifest.js"
+  ],
+  "rootMainFiles": [
+    "static/chunks/[turbopack]_browser_dev_hmr-client_hmr-client_ts_72dfa912._.js",
+    "static/chunks/a1f8a_next_dist_compiled_react-dom_2e0b90d0._.js",
+    "static/chunks/a1f8a_next_dist_compiled_react-server-dom-turbopack_d66f117e._.js",
+    "static/chunks/a1f8a_next_dist_compiled_next-devtools_index_f5148de7.js",
+    "static/chunks/a1f8a_next_dist_compiled_c69a65d0._.js",
+    "static/chunks/a1f8a_next_dist_client_92d4e457._.js",
+    "static/chunks/a1f8a_next_dist_8655cac5._.js",
+    "static/chunks/a1f8a_@swc_helpers_cjs_417476d8._.js",
+    "static/chunks/OneDrive_Área de Trabalho_SitePilates_sitePilates_a0ff3932._.js",
+    "static/chunks/turbopack-OneDrive_Área de Trabalho_SitePilates_sitePilates_b0305a21._.js"
+  ]
+}
