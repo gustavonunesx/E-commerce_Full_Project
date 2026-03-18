@@ -1,5 +1,8 @@
 # things to do
 
+## TELA INICIAL
+precisa configurar ao clicar em um produto abrir um pop up para observações no pedido, (sem alface, adicionar mais queijo coisas do tipo) e ver como isso é mandado pro supabase tambem
+
 
 ## FINALIZACAO DE PEDIDO
 
@@ -21,8 +24,7 @@ Checkout Transparente permite integrar sem o cliente sair do site
 Documentação em português e suporte no Brasil
 
 1. Qual plataforma de pagamento ele prefere — Mercado Pago ou Stripe?
-2. precisa configurar o carrinho para observações no pedido, (sem alface, adicionar mais queijo coisas do tipo) e ver como isso é mandado pro supabase tambem
-3. Para vendas no balcão — o funcionário vai usar um tablet/celular para registrar o pedido na hora?
+2. Para vendas no balcão — o funcionário vai usar um tablet/celular para registrar o pedido na hora?
 
 
 ## ABA PEDIDOS DASHBOARD
