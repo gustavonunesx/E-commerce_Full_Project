@@ -31,6 +31,7 @@ Documentação em português e suporte no Brasil
 
 - hook de verificar pagamento e marcar confirmado automaticamente sem ser manual
 - Upload de imagem direto pelo formulário (por enquanto o dono coloca a URL da imagem do Supabase Storage manualmente)
+- Filtro nao esta funcionando.
 
 
 ## ABA FINANCEIRO DASHBOARD
