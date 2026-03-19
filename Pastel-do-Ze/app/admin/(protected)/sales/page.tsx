@@ -67,10 +67,10 @@ export default async function FinanceiroPage() {
     .reduce((sum, t) => sum + t.valor, 0)
 
   // Receita por categoria de despesa
-  const despesasPorCategoria = despesas.reduce((acc, t) => {
+  const despesasPorCategoria: Record<string, number> = despesas.reduce((acc: Record<string, number>, t) => {
     acc[t.categoria] = (acc[t.categoria] ?? 0) + t.valor
     return acc
-  }, {} as Record<string, number>)
+  }, {})
 
   const categoriasLabel: Record<string, string> = {
     ingredientes: "Ingredientes",
