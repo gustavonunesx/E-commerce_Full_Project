@@ -29,7 +29,7 @@
 
 ## 📖 Sobre o Projeto
 
-A **Melinhas** é uma pastelaria tradicional fundada em 1986. O projeto nasceu da necessidade de modernizar o atendimento — substituindo anotações manuais por um sistema digital completo que cobre desde o pedido do cliente até a gestão financeira do negócio.
+O **Pastel do zé** é uma pastelaria tradicional fundada em 1986. O projeto nasceu da necessidade de modernizar o atendimento — substituindo anotações manuais por um sistema digital completo que cobre desde o pedido do cliente até a gestão financeira do negócio.
 
 O sistema é dividido em duas partes:
 
