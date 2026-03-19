@@ -29,7 +29,11 @@ export function Cart() {
   const generateWhatsAppMessage = () => {
     let message = "Olá! Gostaria de fazer o seguinte pedido:\n\n"
     items.forEach((item) => {
-      message += `${item.quantity}x ${item.name} - ${formatPrice(item.price * item.quantity)}\n`
+      message += `${item.quantity}x ${item.name} - ${formatPrice(item.price * item.quantity)}`
+      if (item.observacao) {
+        message += `\n   ⚠️ Obs: ${item.observacao}`
+      }
+      message += "\n"
     })
     message += `\nTotal: ${formatPrice(totalPrice)}`
     return encodeURIComponent(message)
@@ -110,7 +114,7 @@ export function Cart() {
                       src={item.image}
                       alt={item.name}
                       fill
-                      sizes="(max-width: 640px) 100vw, 50vw"
+                      sizes="80px"
                       className="object-cover"
                     />
                   </div>
@@ -119,6 +123,12 @@ export function Cart() {
                       <div>
                         <h3 className="font-medium text-foreground">{item.name}</h3>
                         <p className="text-sm text-muted-foreground">{item.category}</p>
+                        {/* Observação */}
+                        {item.observacao && (
+                          <p className="text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded-lg mt-1 border border-amber-200">
+                            ⚠️ {item.observacao}
+                          </p>
+                        )}
                       </div>
                       <button
                         onClick={() => removeItem(item.id)}

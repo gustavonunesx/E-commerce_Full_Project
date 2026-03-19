@@ -28,7 +28,7 @@ export default async function AdminLayout({
       <aside className="w-64 bg-background border-r border-border flex flex-col shrink-0">
         {/* Logo */}
         <div className="p-6 border-b border-border">
-          <p className="font-serif text-xl font-bold text-foreground">Melinhas</p>
+          <p className="font-serif text-xl font-bold text-foreground">Pastel do Zé</p>
           <p className="text-xs text-muted-foreground mt-0.5">Painel Administrativo</p>
         </div>
 

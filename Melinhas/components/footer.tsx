@@ -43,15 +43,15 @@ export function Footer() {
             <Link href="/" className="flex items-center gap-3 mb-4">
               {/* Substitua este div pela sua logo personalizada */}
               <Image
-                src="/images/logo.png"
-                alt="Logo Melinhas"
+                src="/images/logo-no.png"
+                alt="Logo"
                 width={48}
                 height={48}
                 className="object-contain"
               />
               <div className="flex flex-col">
                 <span className="font-serif text-2xl font-bold tracking-tight text-secondary-foreground">
-                  Melinhas
+                  Pastel do Zé
                 </span>
                 <span className="text-xs tracking-widest uppercase text-secondary-foreground/70">
                   Desde 1986
@@ -120,7 +120,7 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-secondary-foreground/10 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-secondary-foreground/50">
-            &copy; {new Date().getFullYear()} Melinhas. Todos os
+            &copy; {new Date().getFullYear()} Pastel do Zé. Todos os
             direitos reservados.
           </p>
           <p className="text-sm text-secondary-foreground/50 flex items-center gap-1">

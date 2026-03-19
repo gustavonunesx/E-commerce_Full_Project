@@ -44,8 +44,8 @@ export function Header() {
         >
           {/* Substitua este div pela sua logo personalizada */}
           <Image
-            src="/images/logo.png"
-            alt="Logo Melinhas"
+            src="/images/logo-no.png"
+            alt="Logo"
             width={48}
             height={48}
             className="object-contain"
@@ -55,7 +55,7 @@ export function Header() {
               "font-serif text-xl font-bold tracking-tight transition-colors duration-300",
               isScrolled ? "text-foreground" : "text-background"
             )}>
-              Melinhas
+              Pastel do Zé
             </span>
             <span className={cn(
               "text-xs tracking-widest uppercase transition-colors duration-300",

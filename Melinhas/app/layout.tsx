@@ -19,7 +19,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'Melinhas | Tradição e Sabor desde 1986',
+  title: 'Pastel do Zé | Tradição e Sabor desde 1986',
   description: 'A melhor pastelaria da cidade. Pastéis crocantes, recheios generosos e caldo de cana fresquinho. Venha nos visitar!',
   generator: 'v0.app',
   icons: {

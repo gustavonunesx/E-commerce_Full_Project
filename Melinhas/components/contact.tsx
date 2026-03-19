@@ -6,7 +6,7 @@ import { MapPin, Phone, Mail, Clock, MessageCircle, Navigation } from "lucide-re
 import Image from "next/image"
 
 const GOOGLE_MAPS_URL = "https://www.google.com/maps/search/?api=1&query=Av.+Bruno+Ruggiero+Filho,+1115+-+Parque+Santa+Felicia+Jardim"
-const WHATSAPP_NUMBER = "5516999999999" // Substitua pelo número real
+const WHATSAPP_NUMBER = "5516999999999" 
 
 const contactInfo = [
   {
@@ -24,8 +24,8 @@ const contactInfo = [
   {
     icon: Mail,
     label: "E-mail",
-    value: "contato@melinhas.com.br",
-    href: "mailto:contato@melinhas.com.br",
+    value: "contato@pasteldoze.com.br",
+    href: "mailto:contato@pasteldoze.com.br",
   },
   {
     icon: Clock,
@@ -140,7 +140,7 @@ export function Contact() {
             <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl">
               <Image
                 src="/images/pastelaria-ambiente.jpg"
-                alt="Ambiente da Melinhas"
+                alt="Ambiente "
                 fill
                 className="object-cover"
               />

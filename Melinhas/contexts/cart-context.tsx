@@ -9,6 +9,7 @@ export type CartItem = {
   quantity: number
   image: string
   category: string
+  observacao?: string 
 }
 
 type CartContextType = {
@@ -33,6 +34,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setItems((prevItems) => {
       const existingItem = prevItems.find((i) => i.id === item.id)
       if (existingItem) {
+        // Se já existe mas tem observação diferente, adiciona como item separado
+        if (item.observacao && item.observacao !== existingItem.observacao) {
+          return [...prevItems, { ...item, quantity: 1 }]
+        }
         return prevItems.map((i) =>
           i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
         )
@@ -57,9 +62,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     )
   }
 
-  const clearCart = () => {
-    setItems([])
-  }
+  const clearCart = () => setItems([])
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0)
   const totalPrice = items.reduce((sum, item) => sum + item.price * item.quantity, 0)

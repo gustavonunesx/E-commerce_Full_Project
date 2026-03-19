@@ -37,7 +37,7 @@ export default function LoginPage() {
       <div className="bg-background p-8 rounded-2xl shadow-lg w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="font-serif text-3xl font-bold text-foreground">
-            Melinhas
+            Pastel do zé
           </h1>
           <p className="text-muted-foreground mt-2">
             Acesso restrito — administração

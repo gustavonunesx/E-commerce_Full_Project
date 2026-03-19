@@ -81,7 +81,7 @@ export function About() {
             </h2>
             <div className="space-y-4 text-muted-foreground leading-relaxed">
               <p>
-                A Melinhas começou em 1986 como uma pequena pastelaria de bairro. 
+                O Pastel do Zé começou em 1986 como uma pequena pastelaria de bairro. 
                 Com dedicação e carinho, mantemos a mesma receita secreta da massa 
                 e o compromisso com a qualidade em cada pastel que fazemos.
               </p>
