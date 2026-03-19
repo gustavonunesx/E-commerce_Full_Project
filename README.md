@@ -42,8 +42,8 @@ O sistema é dividido em duas partes:
 
 | Área | URL |
 |---|---|
-| Site público | `seudominio.com` |
-| Painel admin | `seudominio.com/admin/login` |
+| Site público | `https://e-commerce-full-project-pmqj-dkcbdrumf-gustavonunesxs-projects.vercel.app/` |
+| Painel admin | `https://e-commerce-full-project-pmqj-dkcbdrumf-gustavonunesxs-projects.vercel.app//admin/login` |
 
 ---
 
@@ -185,8 +185,8 @@ O projeto utiliza **Row Level Security (RLS)** do Supabase para controlar o aces
 
 ```bash
 # Clone o repositório
-git clone https://github.com/seu-usuario/melinhas.git
-cd melinhas
+git clone https://github.com/gustavonunesx/E-commerce_Full_Project.git
+cd E-commerce_Full_Project
 
 # Instale as dependências
 npm install
@@ -233,7 +233,7 @@ O projeto está configurado para deploy automático na **Vercel**.
 ## 📁 Estrutura de Pastas
 
 ```
-melinhas/
+Pastel-do-Ze/
 ├── app/
 │   ├── admin/
 │   │   ├── (protected)/        # Rotas protegidas por auth
@@ -279,5 +279,5 @@ melinhas/
 
 Feito por **Gustavo Nunes**
 
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Gustavo_Nunes-blue?style=flat-square&logo=linkedin)](https://linkedin.com/in/seu-perfil)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Gustavo_Nunes-blue?style=flat-square&logo=linkedin)](https://www.linkedin.com/in/gustavo-ferreira-nunes/)
 [![GitHub](https://img.shields.io/badge/GitHub-gustavonunesx-black?style=flat-square&logo=github)](https://github.com/gustavonunesx)
