@@ -1,4 +1,4 @@
-# 🥟 Melinhas — Sistema de Gestão para Pastelaria
+# 🥟 Pastel do Zé — Sistema de Gestão para Pastelaria
 
 > Sistema completo full-stack para gerenciamento de uma pastelaria, com cardápio digital, pedidos pelo WhatsApp, painel administrativo e controle financeiro em tempo real.
 
