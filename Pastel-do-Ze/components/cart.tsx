@@ -54,7 +54,7 @@ export function Cart() {
   const handleWhatsAppOrder = async () => {
     const message = generateWhatsAppMessage()
     await salvarPedidoNoSupabase()
-    window.open(`https://wa.me/5516981094196?text=${message}`, "_blank")
+    window.open(`https://wa.me/5516999999999?text=${message}`, "_blank")
     clearCart()
     setIsCartOpen(false)
   }
