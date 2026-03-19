@@ -204,7 +204,7 @@ export default async function FinanceiroPage() {
           <div className="divide-y divide-border">
             {Object.keys(despesasPorCategoria).length > 0 ? (
               Object.entries(despesasPorCategoria)
-                .sort((a, b) => b[1] - a[1])
+                .sort((a, b) => (b[1] as number) - (a[1] as number))
                 .map(([cat, valor]) => (
                   <div key={cat} className="p-4 flex items-center justify-between">
                     <span className="text-sm text-foreground">
