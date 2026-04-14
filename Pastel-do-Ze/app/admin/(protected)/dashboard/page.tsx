@@ -144,21 +144,21 @@ export default async function DashboardPage() {
       </div>
 
       {/* Metric Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
         {metrics.map((m) => (
           <div
             key={m.label}
-            className="bg-background rounded-2xl p-5 border border-border hover:border-primary/30 hover:shadow-md transition-all duration-200 group"
+            className="bg-background rounded-2xl p-3 sm:p-5 border border-border hover:border-primary/30 hover:shadow-md transition-all duration-200 group"
           >
-            <div className="flex items-start justify-between mb-4">
-              <p className="text-sm text-muted-foreground">{m.label}</p>
-              <div className={`w-9 h-9 ${m.bg} rounded-xl flex items-center justify-center shrink-0`}>
-                <m.icon className={`w-4 h-4 ${m.text}`} />
+            <div className="flex items-start justify-between mb-3 sm:mb-4">
+              <p className="text-xs sm:text-sm text-muted-foreground leading-tight">{m.label}</p>
+              <div className={`w-7 h-7 sm:w-9 sm:h-9 ${m.bg} rounded-xl flex items-center justify-center shrink-0 ml-1`}>
+                <m.icon className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${m.text}`} />
               </div>
             </div>
-            <p className="font-serif text-2xl font-bold text-foreground">{m.value}</p>
-            <p className="text-xs text-muted-foreground mt-1">{m.sub}</p>
-            <div className={`mt-4 h-1 w-full rounded-full bg-gradient-to-r ${m.accent} opacity-30 group-hover:opacity-70 transition-opacity`} />
+            <p className="font-serif text-lg sm:text-2xl font-bold text-foreground leading-tight">{m.value}</p>
+            <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 leading-tight">{m.sub}</p>
+            <div className={`mt-3 sm:mt-4 h-1 w-full rounded-full bg-gradient-to-r ${m.accent} opacity-30 group-hover:opacity-70 transition-opacity`} />
           </div>
         ))}
       </div>

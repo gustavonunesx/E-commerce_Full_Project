@@ -108,57 +108,57 @@ export default async function FinanceiroPage() {
       </div>
 
       {/* Cards de métricas */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        <div className="bg-background rounded-2xl p-6 border border-border">
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-sm text-muted-foreground">Receita Total</p>
-            <div className="w-9 h-9 bg-green-100 rounded-xl flex items-center justify-center">
-              <TrendingUp className="w-4 h-4 text-green-700" />
+      <div className="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
+        <div className="bg-background rounded-2xl p-3 sm:p-6 border border-border">
+          <div className="flex items-start justify-between mb-3 sm:mb-4">
+            <p className="text-xs sm:text-sm text-muted-foreground leading-tight">Receita Total</p>
+            <div className="w-7 h-7 sm:w-9 sm:h-9 bg-green-100 rounded-xl flex items-center justify-center shrink-0 ml-1">
+              <TrendingUp className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-700" />
             </div>
           </div>
-          <p className="font-serif text-2xl font-bold text-foreground">
+          <p className="font-serif text-lg sm:text-2xl font-bold text-foreground leading-tight">
             {formatPrice(totalReceitas)}
           </p>
-          <p className="text-xs text-muted-foreground mt-1">desde o início</p>
+          <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">desde o início</p>
         </div>
 
-        <div className="bg-background rounded-2xl p-6 border border-border">
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-sm text-muted-foreground">Despesa Total</p>
-            <div className="w-9 h-9 bg-red-100 rounded-xl flex items-center justify-center">
-              <TrendingDown className="w-4 h-4 text-red-700" />
+        <div className="bg-background rounded-2xl p-3 sm:p-6 border border-border">
+          <div className="flex items-start justify-between mb-3 sm:mb-4">
+            <p className="text-xs sm:text-sm text-muted-foreground leading-tight">Despesa Total</p>
+            <div className="w-7 h-7 sm:w-9 sm:h-9 bg-red-100 rounded-xl flex items-center justify-center shrink-0 ml-1">
+              <TrendingDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-700" />
             </div>
           </div>
-          <p className="font-serif text-2xl font-bold text-foreground">
+          <p className="font-serif text-lg sm:text-2xl font-bold text-foreground leading-tight">
             {formatPrice(totalDespesas)}
           </p>
-          <p className="text-xs text-muted-foreground mt-1">desde o início</p>
+          <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">desde o início</p>
         </div>
 
-        <div className="bg-background rounded-2xl p-6 border border-border">
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-sm text-muted-foreground">Lucro Líquido</p>
-            <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${lucroLiquido >= 0 ? "bg-green-100" : "bg-red-100"}`}>
-              <DollarSign className={`w-4 h-4 ${lucroLiquido >= 0 ? "text-green-700" : "text-red-700"}`} />
+        <div className="bg-background rounded-2xl p-3 sm:p-6 border border-border">
+          <div className="flex items-start justify-between mb-3 sm:mb-4">
+            <p className="text-xs sm:text-sm text-muted-foreground leading-tight">Lucro Líquido</p>
+            <div className={`w-7 h-7 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center shrink-0 ml-1 ${lucroLiquido >= 0 ? "bg-green-100" : "bg-red-100"}`}>
+              <DollarSign className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${lucroLiquido >= 0 ? "text-green-700" : "text-red-700"}`} />
             </div>
           </div>
-          <p className={`font-serif text-2xl font-bold ${lucroLiquido >= 0 ? "text-green-600" : "text-red-600"}`}>
+          <p className={`font-serif text-lg sm:text-2xl font-bold leading-tight ${lucroLiquido >= 0 ? "text-green-600" : "text-red-600"}`}>
             {formatPrice(lucroLiquido)}
           </p>
-          <p className="text-xs text-muted-foreground mt-1">receitas − despesas</p>
+          <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">receitas − despesas</p>
         </div>
 
-        <div className="bg-background rounded-2xl p-6 border border-border">
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-sm text-muted-foreground">Este Mês</p>
-            <div className="w-9 h-9 bg-blue-100 rounded-xl flex items-center justify-center">
-              <ShoppingBag className="w-4 h-4 text-blue-700" />
+        <div className="bg-background rounded-2xl p-3 sm:p-6 border border-border">
+          <div className="flex items-start justify-between mb-3 sm:mb-4">
+            <p className="text-xs sm:text-sm text-muted-foreground leading-tight">Este Mês</p>
+            <div className="w-7 h-7 sm:w-9 sm:h-9 bg-blue-100 rounded-xl flex items-center justify-center shrink-0 ml-1">
+              <ShoppingBag className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-700" />
             </div>
           </div>
-          <p className="font-serif text-2xl font-bold text-green-600">
+          <p className="font-serif text-lg sm:text-2xl font-bold text-green-600 leading-tight">
             +{formatPrice(receitaMes)}
           </p>
-          <p className="text-xs text-red-500 mt-1">−{formatPrice(despesaMes)} em despesas</p>
+          <p className="text-[10px] sm:text-xs text-red-500 mt-1">−{formatPrice(despesaMes)} em despesas</p>
         </div>
       </div>
 
