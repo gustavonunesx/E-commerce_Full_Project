@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
-import { ShoppingBag, TrendingUp, Package, AlertTriangle } from "lucide-react"
+import { ShoppingBag, TrendingUp, Package, AlertTriangle, ArrowUpRight, Clock } from "lucide-react"
 
 function formatPrice(price: number) {
   return price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
@@ -21,27 +21,23 @@ export default async function DashboardPage() {
 
   if (!user) redirect("/admin/login")
 
-  // Busca dados em paralelo para ser mais rápido
   const [
     { data: pedidos },
     { data: transacoes },
     { data: produtos },
     { data: pedidosHoje },
   ] = await Promise.all([
-    // Últimos 10 pedidos
     supabase
       .from("pedidos")
       .select("*, itens_pedido(quantidade, preco_unitario, produtos(nome))")
       .order("criado_em", { ascending: false })
       .limit(10),
 
-    // Receita total e do mês
     supabase
       .from("transacoes_financeiras")
       .select("valor, criado_em, categoria")
       .eq("tipo", "receita"),
 
-    // Produtos com estoque baixo
     supabase
       .from("produtos")
       .select("id, nome, estoque, estoque_minimo, categoria")
@@ -49,14 +45,12 @@ export default async function DashboardPage() {
       .order("estoque", { ascending: true })
       .limit(5),
 
-    // Pedidos de hoje
     supabase
       .from("pedidos")
       .select("id, total")
       .gte("criado_em", new Date().toISOString().split("T")[0]),
   ])
 
-  // Calcula métricas
   const receitaTotal = transacoes?.reduce((sum, t) => sum + t.valor, 0) ?? 0
 
   const inicioMes = new Date()
@@ -73,168 +67,188 @@ export default async function DashboardPage() {
     (p) => p.estoque <= p.estoque_minimo
   ) ?? []
 
-  const statusColors: Record<string, string> = {
-    pendente: "bg-amber-100 text-amber-800",
-    confirmado: "bg-blue-100 text-blue-800",
-    pronto: "bg-purple-100 text-purple-800",
-    entregue: "bg-green-100 text-green-800",
-    cancelado: "bg-red-100 text-red-800",
+  const statusConfig: Record<string, { label: string; className: string }> = {
+    pendente:   { label: "Pendente",   className: "bg-amber-100 text-amber-800 border border-amber-200" },
+    confirmado: { label: "Confirmado", className: "bg-blue-100 text-blue-800 border border-blue-200" },
+    pronto:     { label: "Pronto",     className: "bg-violet-100 text-violet-800 border border-violet-200" },
+    entregue:   { label: "Entregue",   className: "bg-emerald-100 text-emerald-800 border border-emerald-200" },
+    cancelado:  { label: "Cancelado",  className: "bg-red-100 text-red-800 border border-red-200" },
   }
 
   const origemLabels: Record<string, string> = {
-    site: "Site",
-    ifood: "iFood",
+    site:   "Site",
+    ifood:  "iFood",
     balcao: "Balcão",
   }
 
+  const metrics = [
+    {
+      label: "Receita Total",
+      value: formatPrice(receitaTotal),
+      sub: "desde o início",
+      icon: TrendingUp,
+      accent: "from-emerald-500 to-teal-500",
+      bg: "bg-emerald-50",
+      text: "text-emerald-700",
+    },
+    {
+      label: "Receita do Mês",
+      value: formatPrice(receitaMes),
+      sub: new Date().toLocaleDateString("pt-BR", { month: "long" }),
+      icon: ArrowUpRight,
+      accent: "from-blue-500 to-indigo-500",
+      bg: "bg-blue-50",
+      text: "text-blue-700",
+    },
+    {
+      label: "Pedidos Hoje",
+      value: String(totalPedidosHoje),
+      sub: `${formatPrice(receitaHoje)} em vendas`,
+      icon: ShoppingBag,
+      accent: "from-primary to-orange-500",
+      bg: "bg-orange-50",
+      text: "text-orange-700",
+    },
+    {
+      label: "Estoque Baixo",
+      value: String(produtosEstoqueBaixo.length),
+      sub: produtosEstoqueBaixo.length === 0 ? "Tudo em ordem" : "produtos precisam reposição",
+      icon: AlertTriangle,
+      accent: "from-rose-500 to-pink-500",
+      bg: "bg-rose-50",
+      text: "text-rose-700",
+    },
+  ]
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 max-w-7xl mx-auto">
       {/* Header */}
-      <div>
-        <h1 className="font-serif text-3xl font-bold text-foreground">Dashboard</h1>
-        <p className="text-muted-foreground mt-1">
-          {new Date().toLocaleDateString("pt-BR", {
-            weekday: "long",
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-          })}
-        </p>
+      <div className="relative overflow-hidden bg-gradient-to-br from-secondary via-secondary to-primary/80 rounded-2xl p-6 lg:p-8 text-white">
+        <div className="relative z-10">
+          <p className="text-white/60 text-xs uppercase tracking-widest font-medium mb-1">
+            {new Date().toLocaleDateString("pt-BR", {
+              weekday: "long",
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            })}
+          </p>
+          <h1 className="font-serif text-2xl lg:text-3xl font-bold">
+            Bom dia, bem-vindo de volta 👋
+          </h1>
+          <p className="text-white/60 text-sm mt-1">Confira o resumo de hoje</p>
+        </div>
+        {/* Decorative circles */}
+        <div className="absolute -top-8 -right-8 w-40 h-40 rounded-full bg-white/5" />
+        <div className="absolute -bottom-12 -right-4 w-56 h-56 rounded-full bg-white/5" />
       </div>
 
-      {/* Cards de métricas */}
+      {/* Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        <div className="bg-background rounded-2xl p-6 border border-border">
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-sm text-muted-foreground">Receita Total</p>
-            <div className="w-9 h-9 bg-green-100 rounded-xl flex items-center justify-center">
-              <TrendingUp className="w-4 h-4 text-green-700" />
+        {metrics.map((m) => (
+          <div
+            key={m.label}
+            className="bg-background rounded-2xl p-5 border border-border hover:border-primary/30 hover:shadow-md transition-all duration-200 group"
+          >
+            <div className="flex items-start justify-between mb-4">
+              <p className="text-sm text-muted-foreground">{m.label}</p>
+              <div className={`w-9 h-9 ${m.bg} rounded-xl flex items-center justify-center shrink-0`}>
+                <m.icon className={`w-4 h-4 ${m.text}`} />
+              </div>
             </div>
+            <p className="font-serif text-2xl font-bold text-foreground">{m.value}</p>
+            <p className="text-xs text-muted-foreground mt-1">{m.sub}</p>
+            <div className={`mt-4 h-1 w-full rounded-full bg-gradient-to-r ${m.accent} opacity-30 group-hover:opacity-70 transition-opacity`} />
           </div>
-          <p className="font-serif text-2xl font-bold text-foreground">
-            {formatPrice(receitaTotal)}
-          </p>
-          <p className="text-xs text-muted-foreground mt-1">desde o início</p>
-        </div>
-
-        <div className="bg-background rounded-2xl p-6 border border-border">
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-sm text-muted-foreground">Receita do Mês</p>
-            <div className="w-9 h-9 bg-blue-100 rounded-xl flex items-center justify-center">
-              <TrendingUp className="w-4 h-4 text-blue-700" />
-            </div>
-          </div>
-          <p className="font-serif text-2xl font-bold text-foreground">
-            {formatPrice(receitaMes)}
-          </p>
-          <p className="text-xs text-muted-foreground mt-1">
-            {new Date().toLocaleDateString("pt-BR", { month: "long" })}
-          </p>
-        </div>
-
-        <div className="bg-background rounded-2xl p-6 border border-border">
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-sm text-muted-foreground">Pedidos Hoje</p>
-            <div className="w-9 h-9 bg-primary/10 rounded-xl flex items-center justify-center">
-              <ShoppingBag className="w-4 h-4 text-primary" />
-            </div>
-          </div>
-          <p className="font-serif text-2xl font-bold text-foreground">
-            {totalPedidosHoje}
-          </p>
-          <p className="text-xs text-muted-foreground mt-1">
-            {formatPrice(receitaHoje)} em vendas
-          </p>
-        </div>
-
-        <div className="bg-background rounded-2xl p-6 border border-border">
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-sm text-muted-foreground">Estoque Baixo</p>
-            <div className="w-9 h-9 bg-red-100 rounded-xl flex items-center justify-center">
-              <AlertTriangle className="w-4 h-4 text-red-700" />
-            </div>
-          </div>
-          <p className="font-serif text-2xl font-bold text-foreground">
-            {produtosEstoqueBaixo.length}
-          </p>
-          <p className="text-xs text-muted-foreground mt-1">
-            {produtosEstoqueBaixo.length === 0 ? "Tudo em ordem" : "produtos precisam reposição"}
-          </p>
-        </div>
+        ))}
       </div>
 
+      {/* Bottom Grid */}
       <div className="grid lg:grid-cols-3 gap-6">
-        {/* Últimos pedidos */}
+        {/* Últimos Pedidos */}
         <div className="lg:col-span-2 bg-background rounded-2xl border border-border overflow-hidden">
-          <div className="p-6 border-b border-border">
-            <h2 className="font-semibold text-foreground">Últimos Pedidos</h2>
+          <div className="px-6 py-4 border-b border-border flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-5 bg-primary rounded-full" />
+              <h2 className="font-semibold text-foreground">Últimos Pedidos</h2>
+            </div>
+            <Clock className="w-4 h-4 text-muted-foreground" />
           </div>
           <div className="divide-y divide-border">
             {pedidos && pedidos.length > 0 ? (
-              pedidos.map((pedido: any) => (
-                <div key={pedido.id} className="p-4 flex items-center justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-sm font-medium text-foreground">
-                        Pedido #{pedido.id}
-                      </span>
-                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusColors[pedido.status] ?? "bg-muted text-muted-foreground"}`}>
-                        {pedido.status}
-                      </span>
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
-                        {origemLabels[pedido.origem] ?? pedido.origem}
-                      </span>
+              pedidos.map((pedido: any) => {
+                const sc = statusConfig[pedido.status]
+                return (
+                  <div key={pedido.id} className="px-6 py-3.5 flex items-center justify-between gap-4 hover:bg-muted/40 transition-colors">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap mb-1">
+                        <span className="text-sm font-semibold text-foreground">
+                          #{pedido.id}
+                        </span>
+                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${sc?.className ?? "bg-muted text-muted-foreground"}`}>
+                          {sc?.label ?? pedido.status}
+                        </span>
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
+                          {origemLabels[pedido.origem] ?? pedido.origem}
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {formatDate(pedido.criado_em)}
+                        {pedido.nome_cliente && ` · ${pedido.nome_cliente}`}
+                      </p>
                     </div>
-                    <p className="text-xs text-muted-foreground">
-                      {formatDate(pedido.criado_em)}
-                      {pedido.nome_cliente && ` · ${pedido.nome_cliente}`}
-                    </p>
+                    <span className="font-semibold text-foreground whitespace-nowrap text-sm">
+                      {formatPrice(pedido.total)}
+                    </span>
                   </div>
-                  <span className="font-semibold text-foreground whitespace-nowrap">
-                    {formatPrice(pedido.total)}
-                  </span>
-                </div>
-              ))
+                )
+              })
             ) : (
-              <div className="p-8 text-center text-muted-foreground">
-                <ShoppingBag className="w-8 h-8 mx-auto mb-2 opacity-30" />
+              <div className="py-12 text-center text-muted-foreground">
+                <ShoppingBag className="w-10 h-10 mx-auto mb-3 opacity-20" />
                 <p className="text-sm">Nenhum pedido ainda</p>
               </div>
             )}
           </div>
         </div>
 
-        {/* Produtos com estoque baixo */}
+        {/* Estoque */}
         <div className="bg-background rounded-2xl border border-border overflow-hidden">
-          <div className="p-6 border-b border-border">
+          <div className="px-6 py-4 border-b border-border flex items-center gap-2">
+            <div className="w-1.5 h-5 bg-amber-500 rounded-full" />
             <h2 className="font-semibold text-foreground">Estoque</h2>
           </div>
           <div className="divide-y divide-border">
             {produtos && produtos.length > 0 ? (
               produtos.map((produto: any) => {
                 const baixo = produto.estoque <= produto.estoque_minimo
+                const pct = Math.min(100, (produto.estoque / (produto.estoque_minimo * 3 || 1)) * 100)
                 return (
-                  <div key={produto.id} className="p-4 flex items-center justify-between gap-3">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground truncate">
-                        {produto.nome}
-                      </p>
-                      <p className="text-xs text-muted-foreground">{produto.categoria}</p>
+                  <div key={produto.id} className="px-6 py-4">
+                    <div className="flex items-center justify-between gap-3 mb-2">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-foreground truncate">{produto.nome}</p>
+                        <p className="text-xs text-muted-foreground">{produto.categoria}</p>
+                      </div>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        {baixo && <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />}
+                        <span className={`text-sm font-bold ${baixo ? "text-red-500" : "text-foreground"}`}>
+                          {produto.estoque}
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      {baixo && (
-                        <AlertTriangle className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                      )}
-                      <span className={`text-sm font-semibold ${baixo ? "text-red-600" : "text-foreground"}`}>
-                        {produto.estoque}
-                      </span>
+                    <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
+                      <div
+                        className={`h-full rounded-full transition-all ${baixo ? "bg-red-400" : "bg-emerald-400"}`}
+                        style={{ width: `${pct}%` }}
+                      />
                     </div>
                   </div>
                 )
               })
             ) : (
-              <div className="p-8 text-center text-muted-foreground">
-                <Package className="w-8 h-8 mx-auto mb-2 opacity-30" />
+              <div className="py-12 text-center text-muted-foreground">
+                <Package className="w-10 h-10 mx-auto mb-3 opacity-20" />
                 <p className="text-sm">Nenhum produto</p>
               </div>
             )}
