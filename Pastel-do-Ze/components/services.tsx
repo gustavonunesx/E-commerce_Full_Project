@@ -228,7 +228,7 @@ function ProductCard({ product }: { product: Product }) {
             onClick={handleClickAdicionar}
             disabled={isOutOfStock}
             className={cn(
-              "absolute bottom-4 right-4 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg",
+              "absolute bottom-2.5 right-2.5 sm:bottom-3 sm:right-3 w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg",
               added
                 ? "bg-green-500 text-white scale-110"
                 : isOutOfStock
@@ -237,26 +237,32 @@ function ProductCard({ product }: { product: Product }) {
             )}
             aria-label="Adicionar à sacola"
           >
-            {added ? <Check className="w-6 h-6" /> : <Plus className="w-6 h-6" />}
+            {added ? (
+              <Check className="w-4 h-4 sm:w-5 sm:h-5" />
+            ) : (
+              <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
+            )}
           </button>
         </div>
 
-        <div className="p-5">
-          <div className="flex items-start justify-between gap-2 mb-2">
-            <h3 className="font-serif text-lg text-foreground font-medium group-hover:text-primary transition-colors">
+        <div className="p-3 sm:p-4">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-0.5 sm:gap-2 mb-1.5">
+            <h3 className="font-serif text-sm sm:text-base text-foreground font-medium group-hover:text-primary transition-colors line-clamp-1 leading-tight">
               {product.nome}
             </h3>
-            <span className="text-primary font-bold whitespace-nowrap">
+            <span className="text-primary font-bold text-base sm:text-sm whitespace-nowrap leading-tight">
               {formatPrice(product.preco)}
             </span>
           </div>
-          <p className="text-sm text-muted-foreground line-clamp-2">{product.descricao}</p>
+          <p className="text-xs sm:text-[13px] text-muted-foreground line-clamp-2 leading-snug">
+            {product.descricao}
+          </p>
           {isOutOfStock && (
-            <span className="inline-block mt-3 text-xs bg-destructive/10 text-destructive px-2 py-1 rounded">
+            <span className="inline-block mt-2 sm:mt-3 text-[10px] sm:text-xs bg-destructive/10 text-destructive px-1.5 py-0.5 sm:px-2 sm:py-1 rounded">
               Esgotado
             </span>
           )}
-          <span className="inline-block mt-3 text-xs text-muted-foreground/70 bg-muted px-2 py-1 rounded ml-1">
+          <span className="inline-block mt-2 sm:mt-3 text-[10px] sm:text-xs text-muted-foreground/70 bg-muted px-1.5 py-0.5 sm:px-2 sm:py-1 rounded ml-1">
             {product.categoria}
           </span>
         </div>
@@ -338,7 +344,7 @@ export function Services() {
 
         <div
           className={cn(
-            "grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 transition-all duration-700",
+            "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-5 transition-all duration-700",
             isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           )}
           style={{ transitionDelay: "300ms" }}

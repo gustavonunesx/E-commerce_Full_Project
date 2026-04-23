@@ -11,9 +11,10 @@ function formatPrice(price: number) {
 export default async function PedidosPage({
   searchParams,
 }: {
-  searchParams: { status?: string; origem?: string; periodo?: string }
+  searchParams: Promise<{ status?: string; origem?: string; periodo?: string }>
 }) {
   const supabase = await createClient()
+  const { status, origem, periodo } = await searchParams
 
   let query = supabase
     .from("pedidos")
@@ -29,23 +30,23 @@ export default async function PedidosPage({
     `)
     .order("criado_em", { ascending: false })
 
-  if (searchParams.status && searchParams.status !== "todos") {
-    query = query.eq("status", searchParams.status)
+  if (status && status !== "todos") {
+    query = query.eq("status", status)
   }
 
-  if (searchParams.origem && searchParams.origem !== "todos") {
-    query = query.eq("origem", searchParams.origem)
+  if (origem && origem !== "todos") {
+    query = query.eq("origem", origem)
   }
 
-  if (searchParams.periodo) {
+  if (periodo) {
     const hoje = new Date()
-    if (searchParams.periodo === "hoje") {
+    if (periodo === "hoje") {
       hoje.setHours(0, 0, 0, 0)
       query = query.gte("criado_em", hoje.toISOString())
-    } else if (searchParams.periodo === "semana") {
+    } else if (periodo === "semana") {
       hoje.setDate(hoje.getDate() - 7)
       query = query.gte("criado_em", hoje.toISOString())
-    } else if (searchParams.periodo === "mes") {
+    } else if (periodo === "mes") {
       hoje.setDate(1)
       hoje.setHours(0, 0, 0, 0)
       query = query.gte("criado_em", hoje.toISOString())
@@ -100,9 +101,9 @@ export default async function PedidosPage({
 
       {/* Filtros */}
       <FiltrosPedidos
-        statusAtual={searchParams.status ?? "todos"}
-        origemAtual={searchParams.origem ?? "todos"}
-        periodoAtual={searchParams.periodo ?? "todos"}
+        statusAtual={status ?? "todos"}
+        origemAtual={origem ?? "todos"}
+        periodoAtual={periodo ?? "todos"}
       />
 
       {/* Resumo */}

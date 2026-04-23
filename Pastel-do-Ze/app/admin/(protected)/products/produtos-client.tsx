@@ -93,15 +93,19 @@ export default function ProdutosClient({ produtos: produtosIniciais, categorias 
                 {produtosCat.length}
               </span>
             </h2>
-            <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
+            <div className="flex gap-3 sm:gap-4 overflow-x-auto snap-x snap-mandatory scroll-px-6 pb-3 -mx-6 px-6 lg:-mx-8 lg:px-8 lg:scroll-px-8 items-start [scrollbar-width:thin]">
               {produtosCat.map((produto) => (
-                <ProdutoCard
+                <div
                   key={produto.id}
-                  produto={produto}
-                  categorias={categorias}
-                  onAtualizar={atualizarProduto}
-                  onRemover={removerProduto}
-                />
+                  className="snap-start shrink-0 w-44 sm:w-56"
+                >
+                  <ProdutoCard
+                    produto={produto}
+                    categorias={categorias}
+                    onAtualizar={atualizarProduto}
+                    onRemover={removerProduto}
+                  />
+                </div>
               ))}
             </div>
           </div>
@@ -164,36 +168,36 @@ function ProdutoCard({ produto, categorias, onAtualizar, onRemover }: CardProps)
             src={produto.imagem_url}
             alt={produto.nome}
             fill
-            sizes="(max-width: 640px) 100vw, 33vw"
+            sizes="(max-width: 640px) 50vw, 33vw"
             className="object-cover"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-muted-foreground text-sm">
+          <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs sm:text-sm">
             Sem imagem
           </div>
         )}
-        <div className="absolute top-2 left-2">
-          <span className={`text-xs px-2 py-1 rounded-full font-medium ${ativo ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-600"}`}>
+        <div className="absolute top-1.5 left-1.5 sm:top-2 sm:left-2">
+          <span className={`text-[10px] sm:text-xs px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full font-medium ${ativo ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-600"}`}>
             {ativo ? "Ativo" : "Inativo"}
           </span>
         </div>
       </div>
 
       {/* Info */}
-      <div className="p-4">
-        <div className="flex items-start justify-between gap-2 mb-1">
-          <h3 className="font-medium text-foreground text-sm leading-tight">{produto.nome}</h3>
-          <span className="font-bold text-primary text-sm whitespace-nowrap">
+      <div className="p-3 sm:p-4">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-0.5 sm:gap-2 mb-1">
+          <h3 className="font-medium text-foreground text-xs sm:text-sm leading-tight line-clamp-1">{produto.nome}</h3>
+          <span className="font-bold text-primary text-sm whitespace-nowrap leading-tight">
             {formatPrice(produto.preco)}
           </span>
         </div>
-        <p className="text-xs text-muted-foreground line-clamp-2 mb-3">{produto.descricao}</p>
+        <p className="text-[11px] sm:text-xs text-muted-foreground line-clamp-2 mb-2.5 sm:mb-3 leading-snug">{produto.descricao}</p>
 
         {/* Ações */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           <button
             onClick={toggleAtivo}
-            className={`flex-1 py-1.5 rounded-xl text-xs font-medium transition-all border ${
+            className={`flex-1 py-1.5 rounded-xl text-[11px] sm:text-xs font-medium transition-all border ${
               ativo
                 ? "border-red-200 text-red-600 hover:bg-red-50"
                 : "border-green-200 text-green-600 hover:bg-green-50"
@@ -204,15 +208,17 @@ function ProdutoCard({ produto, categorias, onAtualizar, onRemover }: CardProps)
           <button
             onClick={() => setEditando(!editando)}
             className="p-1.5 border border-border rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-all"
+            aria-label={editando ? "Cancelar edição" : "Editar"}
           >
-            {editando ? <X className="w-4 h-4" /> : <Pencil className="w-4 h-4" />}
+            {editando ? <X className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
           </button>
           <button
             onClick={deletarProduto}
             disabled={deletando}
             className="p-1.5 border border-border rounded-xl text-muted-foreground hover:text-destructive hover:border-destructive transition-all disabled:opacity-50"
+            aria-label="Deletar"
           >
-            <Trash2 className="w-4 h-4" />
+            <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
         </div>
 
